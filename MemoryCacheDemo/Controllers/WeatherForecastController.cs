@@ -12,19 +12,19 @@ public class WeatherForecastController : ControllerBase
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
-    private readonly IMemoryCache _casheService;
+    private readonly IMemoryCache _cacheService;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, IMemoryCache casheService)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IMemoryCache cacheService)
     {
         _logger = logger;
-        _casheService = casheService;
+        _cacheService = cacheService;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
     public List<WeatherForecast> Get()
     {
         //Do not hardcode
-        if (!_casheService.TryGetValue("MyCacheKey", out List<WeatherForecast> weathersFromCache))
+        if (!_cacheService.TryGetValue("MyCacheKey", out List<WeatherForecast> weathersFromCache))
         {
             var weathers = Enumerable.Range(1, 300).Select(index => new WeatherForecast
             {
@@ -33,7 +33,7 @@ public class WeatherForecastController : ControllerBase
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             }).ToList();
 
-            _casheService.Set<List<WeatherForecast>>("MyCacheKey", weathers);
+            _cacheService.Set<List<WeatherForecast>>("MyCacheKey", weathers);
 
             return weathers;
         }
